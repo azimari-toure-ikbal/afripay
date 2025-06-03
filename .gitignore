@@ -7,7 +7,3 @@ dist
 
 .env
 .env*
-
-tsconfig.json
-tsdown.config.ts
-vitest.config.ts
