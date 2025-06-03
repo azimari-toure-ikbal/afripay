@@ -3,7 +3,7 @@ export type WaveRequest = {
   currency: string
   error_url: string
   success_url: string
-  client_reference: string
+  client_reference?: string
 }
 
 export type WaveResponse = {

@@ -27,15 +27,25 @@
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "payments",
+    "africa",
+    "wave",
+    "orange-money",
+    "paytech",
+    "paydunya",
+    "senegal",
+    "galsen"
+  ],
   "scripts": {
     "lint": "eslint --cache .",
     "lint:fix": "bun run lint --fix",
-    "build": "tsdown",
+    "build": "tsdown ",
     "dev": "tsdown --watch",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
     "format": "prettier --cache --write .",
-    "release": "bumpp && bun publish",
+    "release": "bun run build && changeset publish",
     "prepublishOnly": "bun run build"
   },
   "devDependencies": {
@@ -51,5 +61,8 @@
     "typescript": "^5.8.3",
     "vitest": "^3.1.3"
   },
-  "prettier": "@sxzz/prettier-config"
+  "prettier": "@sxzz/prettier-config",
+  "dependencies": {
+    "@changesets/cli": "^2.29.4"
+  }
 }

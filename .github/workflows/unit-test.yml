@@ -1,10 +1,9 @@
-name: Unit Test
+name: CI
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches:
+      - '**'
 
 jobs:
   test:
@@ -20,7 +19,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: bun
 
       - name: Install
         run: bun install

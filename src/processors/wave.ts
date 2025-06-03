@@ -1,4 +1,5 @@
 import type { WaveRequest, WaveResponse } from '../types'
+import { AfriError } from '../utils/error'
 
 const WAVE_BASE_URL = 'https://api.wave.com'
 
@@ -10,7 +11,7 @@ const WAVE_BASE_URL = 'https://api.wave.com'
  * If `mode` is `'test'`, it will always charge 1 unit of the currency (for test purposes).
  * In `'prod'` mode, it uses the actual `amount` provided in the `request` object.
  *
- * The `client_reference` field in the request is an arbitrary string that your application
+ * The `client_reference` optional field in the request is an arbitrary string that your application
  * can use to tie this payment back to some entity on your side (for example, a user ID,
  * an order ID, or any other reference you need). Wave will return this same value in the response,
  * so you can match incoming webhooks or redirect callbacks to your internal records.
@@ -34,10 +35,10 @@ const WAVE_BASE_URL = 'https://api.wave.com'
  *   - `wave_launch_url`: The URL where you must redirect the user to complete payment.
  *   - `client_reference`: Echoes back the same reference you sent, so you can match it on your end.
  *
- * @throws {Error}
- *   - If `process.env.WAVE_API_KEY` is not set, an error is thrown before making any network calls.
+ * @throws {AfriError}
+ *   - If `process.env.WAVE_API_KEY` is not set, an error is thrown with the reason `'missing_api_key'`.
  *   - If the HTTP response from Wave is not OK (status code not in the 2xx range),
- *     an error with message `'Failed to create Wave checkout session'` is thrown.
+ *     an error with message with the reason `'request_failed'` is thrown.
  *
  * @example
  * ```ts
@@ -68,10 +69,8 @@ export const payWithWave = async (
   request: WaveRequest,
   mode: 'test' | 'prod' = 'test',
 ): Promise<WaveResponse> => {
-  console.log('env', process.env.WAVE_API_KEY)
-
   if (!process.env.WAVE_API_KEY) {
-    throw new Error('WAVE_API_KEY is not set')
+    throw new AfriError('missing_api_key', 'WAVE_API_KEY is not set')
   }
 
   const res = await fetch(`${WAVE_BASE_URL}/v1/checkout/sessions`, {
@@ -90,7 +89,11 @@ export const payWithWave = async (
   })
 
   if (!res.ok) {
-    throw new Error('Failed to create Wave checkout session')
+    console.log('request failed', res.statusText)
+    throw new AfriError(
+      'request_failed',
+      'Failed to create Wave checkout session',
+    )
   }
 
   const data = (await res.json()) as WaveResponse
