@@ -1,0 +1,55 @@
+{
+  "name": "afripay",
+  "version": "0.0.2",
+  "packageManager": "bun@1.2.10",
+  "description": "Methods for payment processors in Africa.",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://github.com/azimari-toure-ikbal/afripay#readme",
+  "bugs": {
+    "url": "https://github.com/azimari-toure-ikbal/afripay/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/azimari-toure-ikbal/afripay.git"
+  },
+  "author": "Ikbal AZIMARI TOURE <azimari.toure.ikbal@gmail.com>",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "lint": "eslint --cache .",
+    "lint:fix": "bun run lint --fix",
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --cache --write .",
+    "release": "bumpp && bun publish",
+    "prepublishOnly": "bun run build"
+  },
+  "devDependencies": {
+    "@sxzz/eslint-config": "^7.0.1",
+    "@sxzz/prettier-config": "^2.2.1",
+    "@types/node": "^22.15.17",
+    "bumpp": "^10.1.0",
+    "eslint": "^9.26.0",
+    "happy-dom": "^17.4.7",
+    "prettier": "^3.5.3",
+    "tsdown": "^0.11.9",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.3"
+  },
+  "prettier": "@sxzz/prettier-config"
+}
