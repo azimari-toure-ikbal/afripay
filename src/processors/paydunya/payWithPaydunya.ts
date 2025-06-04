@@ -24,7 +24,6 @@ export const PAYDUNYA_PROD_URL =
  *   - `invoice.total_amount`: The total amount to charge (in the smallest currency unit, e.g., cents).
  *   - `invoice.description`: A short description of this payment (e.g., `"Order #1234"`).
  *   - `store.name`: Your store’s name as registered with Paydunya.
- *   - `mode`: Must match one of the Paydunya modes (`'test'` or `'live'`); note this differs from our argument `mode`;
  *       here it instructs Paydunya how to process the invoice.
  *   - `actions.cancel_url`: URL to redirect the user if they cancel.
  *   - `actions.return_url`: URL to redirect the user after successful payment.
@@ -64,7 +63,6 @@ export const PAYDUNYA_PROD_URL =
  *     store: {
  *       name: 'Mon E-Shop',
  *     },
- *     mode: 'test', // paydunya’s own mode flag inside the payload
  *     actions: {
  *       cancel_url: 'https://example.com/checkout/cancel',
  *       return_url: 'https://example.com/checkout/success',
@@ -106,6 +104,8 @@ export const payWithPaydunya = async (
 
   const url = mode === 'test' ? PAYDUNYA_TEST_URL : PAYDUNYA_PROD_URL
 
+  const payload = { ...request, mode: mode === 'test' ? 'test' : 'live' }
+
   const res = await fetch(url, {
     method: 'POST',
     headers: {
@@ -114,7 +114,7 @@ export const payWithPaydunya = async (
       'PAYDUNYA-PRIVATE-KEY': process.env.PAYDUNYA_PRIVATE_KEY,
       'PAYDUNYA-TOKEN': process.env.PAYDUNYA_TOKEN,
     },
-    body: JSON.stringify(request),
+    body: JSON.stringify(payload),
   })
 
   if (!res.ok) {

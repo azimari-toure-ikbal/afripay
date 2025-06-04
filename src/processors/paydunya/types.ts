@@ -6,7 +6,6 @@ export type PaydunyaRequest = {
   store: {
     name: string
   }
-  mode: 'test' | 'live'
   actions: {
     cancel_url: string
     return_url: string
