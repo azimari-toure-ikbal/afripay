@@ -1,6 +1,6 @@
 {
   "name": "afripay",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "packageManager": "bun@1.2.10",
   "description": "A TypeScript library to simplify integration with African payment processors (Orange Money, Wave, Paytech, Paydunya, etc).",
   "type": "module",
