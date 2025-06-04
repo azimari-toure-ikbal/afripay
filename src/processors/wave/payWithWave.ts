@@ -1,7 +1,7 @@
-import type { WaveRequest, WaveResponse } from '../types'
-import { AfriError } from '../utils/error'
+import { AfriError } from '../../utils/error'
+import type { WaveRequest, WaveResponse } from './types'
 
-const WAVE_BASE_URL = 'https://api.wave.com'
+export const WAVE_BASE_URL = 'https://api.wave.com'
 
 /**
  * Initiates a Wave checkout session to process a payment.
@@ -21,7 +21,7 @@ const WAVE_BASE_URL = 'https://api.wave.com'
  *
  * @param {WaveRequest} request
  *   - `amount`: The payment amount (in smallest currency unit) to process. Ignored if `mode` is `'test'`.
- *   - `currency`: The three-letter currency code (e.g., `'USD'`, `'XOF'`).
+ *   - `currency`: The three-letter currency code (only XOF is supported at the moment).
  *   - `error_url`: The URL to which Wave will redirect the user if the payment fails.
  *   - `success_url`: The URL to which Wave will redirect the user if the payment succeeds.
  *   - `client_reference`: An arbitrary identifier (e.g., userId or orderId) that Wave will return
@@ -48,7 +48,7 @@ const WAVE_BASE_URL = 'https://api.wave.com'
  * app.post('/create-payment', async (req, res) => {
  *   const waveRequest: WaveRequest = {
  *     amount: 5000,                // e.g., $50.00 in cents
- *     currency: 'USD',
+ *     currency: 'XOF',
  *     error_url: 'https://example.com/payment-error',
  *     success_url: 'https://example.com/payment-success',
  *     client_reference: 'user_1234'

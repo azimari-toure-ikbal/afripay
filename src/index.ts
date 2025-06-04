@@ -1,2 +1,4 @@
 export * from './processors/wave'
-export * from './types'
+// export * from './processors/paytech'
+export * from './processors/paydunya'
+// export * from './processors/orange-money'

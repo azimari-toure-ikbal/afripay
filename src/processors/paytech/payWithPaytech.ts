@@ -1,4 +1,4 @@
-import type { PaytechRequest, PaytechResponse } from '../types'
+import type { PaytechRequest, PaytechResponse } from './types'
 
 const PAYTECH_BASE_URL = 'https://paytech.sn/api'
 

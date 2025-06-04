@@ -2,7 +2,7 @@
   "name": "afripay",
   "version": "0.0.2",
   "packageManager": "bun@1.2.10",
-  "description": "Methods for payment processors in Africa.",
+  "description": "A TypeScript library to simplify integration with African payment processors (Orange Money, Wave, Paytech, Paydunya, etc).",
   "type": "module",
   "license": "MIT",
   "homepage": "https://github.com/azimari-toure-ikbal/afripay#readme",
@@ -14,6 +14,16 @@
     "url": "git+https://github.com/azimari-toure-ikbal/afripay.git"
   },
   "author": "Ikbal AZIMARI TOURE <azimari.toure.ikbal@gmail.com>",
+  "keywords": [
+    "payments",
+    "africa",
+    "wave",
+    "orange-money",
+    "paytech",
+    "paydunya",
+    "senegal",
+    "galsen"
+  ],
   "files": [
     "dist"
   ],
@@ -27,16 +37,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [
-    "payments",
-    "africa",
-    "wave",
-    "orange-money",
-    "paytech",
-    "paydunya",
-    "senegal",
-    "galsen"
-  ],
   "scripts": {
     "lint": "eslint --cache .",
     "lint:fix": "bun run lint --fix",

@@ -1,9 +1,11 @@
 // payWithWave.test.ts
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { payWithWave } from '../src/processors/wave'
-import { WaveRequest, WaveResponse } from '../src/types'
-
-const WAVE_URL = 'https://api.wave.com/v1/checkout/sessions'
+import {
+  payWithWave,
+  WAVE_BASE_URL,
+  WaveRequest,
+  WaveResponse,
+} from '../src/processors/wave'
 
 describe('payWithWave', () => {
   const originalEnv = process.env
@@ -21,7 +23,7 @@ describe('payWithWave', () => {
 
     const request: WaveRequest = {
       amount: 500,
-      currency: 'USD',
+      currency: 'XOF',
       error_url: 'https://example.com/error',
       success_url: 'https://example.com/success',
       client_reference: 'user_1',
@@ -54,20 +56,23 @@ describe('payWithWave', () => {
     )
 
     expect(global.fetch).toHaveBeenCalledOnce()
-    expect(global.fetch).toHaveBeenCalledWith(WAVE_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer test_key`,
-        'Content-Type': 'application/json',
+    expect(global.fetch).toHaveBeenCalledWith(
+      `${WAVE_BASE_URL}/v1/checkout/sessions`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer test_key`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: request.amount,
+          currency: request.currency,
+          error_url: request.error_url,
+          success_url: request.success_url,
+          client_reference: request.client_reference,
+        }),
       },
-      body: JSON.stringify({
-        amount: request.amount,
-        currency: request.currency,
-        error_url: request.error_url,
-        success_url: request.success_url,
-        client_reference: request.client_reference,
-      }),
-    })
+    )
   })
 
   it('sends amount = 1 in test mode, ignores request.amount', async () => {
@@ -77,7 +82,7 @@ describe('payWithWave', () => {
       amount: '1',
       checkout_status: 'open',
       client_reference: 'test_ref',
-      currency: 'USD',
+      currency: 'XOF',
       error_url: 'https://example.com/error',
       last_payment_error: null,
       business_name: 'TestBiz',
@@ -99,7 +104,7 @@ describe('payWithWave', () => {
 
     const request: WaveRequest = {
       amount: 9999, // this should be ignored in test mode
-      currency: 'USD',
+      currency: 'XOF',
       error_url: 'https://example.com/error',
       success_url: 'https://example.com/success',
       client_reference: 'test_ref',
