@@ -30,6 +30,17 @@ export type OMResponse = {
   }
 }
 
+/**
+ * @internal
+ * This is the type of the webhook payload that Orange Money sends to your webhook URL.
+ * It is generic over the `metadata` field so you can customize it to any JSON-compatible type.
+ *
+ * @example
+ * ```ts
+ * type MyMetadata = { userId: number }
+ * type MyWebhookResponse = OMWebhookResponse<MyMetadata>
+ * ```
+ */
 export type OMWebhookResponse<T extends OMMetadata> = {
   amount: {
     unit: 'XOF'
