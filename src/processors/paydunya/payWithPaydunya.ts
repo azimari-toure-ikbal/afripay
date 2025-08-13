@@ -1,3 +1,4 @@
+import { AfriError } from '../../utils/error'
 import type { PaydunyaRequest, PaydunyaResponse } from './types'
 
 export const PAYDUNYA_TEST_URL =
@@ -7,99 +8,87 @@ export const PAYDUNYA_PROD_URL =
   'https://app.paydunya.com/api/v1/checkout-invoice/create'
 
 /**
- * Initiates a Paydunya payment request by sending a POST to Paydunya's API.
+ * Create a PayDunya payment session (checkout / invoice).
  *
  * @remarks
- * This function requires the following environment variables to be set:
- * - `PAYDUNYA_MASTER_KEY`
+ * Sends a request to PayDunya to generate a hosted payment session. The API
+ * returns a short payload containing:
+ * - `response_code` — Gateway status code.
+ * - `response_text` — The redirect URL to the hosted checkout page.
+ * - `description` — Human-readable description of the transaction.
+ * - `token` — Unique token identifying the transaction (used for later verification).
+ *
+ * The runtime environment is selected via the `mode` parameter:
+ * - `"test"` → sandbox behavior
+ * - `"prod"` → live/production behavior
+ *
+ * Required environment variables:
+ * - `PAYDUNYA_PUBLIC_KEY`
  * - `PAYDUNYA_PRIVATE_KEY`
  * - `PAYDUNYA_TOKEN`
  *
- * Depending on the `mode` (
- *   - `'test'`: uses the sandbox/test endpoint (`PAYDUNYA_TEST_URL`).
- *   - `'prod'`: uses the live endpoint (`PAYDUNYA_PROD_URL`).
- * ), it selects the proper URL for creating a payment request.
+ * @param request - The PayDunya request payload. See {@link PaydunyaRequest}.
+ *                  Typical fields include: amount, currency, label/description,
+ *                  success/cancel callbacks, IPN URL, and an optional
+ *                  idempotent `client_reference`.
+ * @param mode - `"test"` for sandbox or `"prod"` for production.
  *
- * @param {PaydunyaRequest} request
- *   - `invoice.total_amount`: The total amount to charge (in the smallest currency unit, e.g., cents).
- *   - `invoice.description`: A short description of this payment (e.g., `"Order #1234"`).
- *   - `store.name`: Your store’s name as registered with Paydunya.
- *       here it instructs Paydunya how to process the invoice.
- *   - `actions.cancel_url`: URL to redirect the user if they cancel.
- *   - `actions.return_url`: URL to redirect the user after successful payment.
- *   - `actions.callback_url`: Your webhook endpoint, where Paydunya will POST payment updates.
- *   - `custom_data`: An optional arbitrary object (e.g., `{ userId: 42, orderId: 'xyz' }`) that Paydunya will include
- *       in its callbacks so you can match state.
+ * @returns The PayDunya API response. See {@link PaydunyaResponse}:
+ * ```ts
+ * type PaydunyaResponse = {
+ *   response_code: string        // Status code from PayDunya
+ *   response_text: string        // Redirect URL to hosted checkout
+ *   description: string          // Description of the transaction
+ *   token: string                // Unique transaction token
+ * }
+ * ```
  *
- * @param {'test' | 'prod'} [mode='test']
- *   - If `'test'`, uses the sandbox/test URL (`PAYDUNYA_TEST_URL`) for development.
- *   - If `'prod'`, uses the live endpoint (`PAYDUNYA_PROD_URL`) for real payments.
- *
- * @returns {Promise<PaydunyaResponse>}
- *   A promise that resolves to the JSON response from Paydunya, which includes:
- *   - `response_code`: A short code indicating success or failure (e.g., `"00"` for success).
- *   - `response_text`: A human-readable message describing the result.
- *   - `description`: Echoes back the invoice description.
- *   - `token`: A unique token string; you must redirect the user to `https://paydunya.com/invoice/:token`
- *       (or similar) so they can complete the payment flow on Paydunya’s page.
- *
- * @throws {Error}
- *   - If `process.env.PAYDUNYA_MASTER_KEY` is not set.
- *   - If `process.env.PAYDUNYA_PRIVATE_KEY` is not set.
- *   - If `process.env.PAYDUNYA_TOKEN` is not set.
- *   - If the HTTP response from Paydunya is not OK (non-2xx), throws `'Failed to create Paydunya payment request'`.
+ * @throws AfriError
+ * The function throws the following `AfriError` codes:
+ * - **`missing_api_key`**
+ *   - Thrown when one of `PAYDUNYA_PUBLIC_KEY`, `PAYDUNYA_PRIVATE_KEY`, or
+ *     `PAYDUNYA_TOKEN` is not set in the environment.
+ * - **`request_failed`**
+ *   - Thrown when the PayDunya API responds with a non-2xx HTTP status.
+ *   - The `details` (if available) contain the gateway’s error payload.
  *
  * @example
  * ```ts
- * import { payWithPaydunya } from './payWithPaydunya'
+ * const res = await payWithPaydunya(
+ *   {
+ *     amount: 5000,
+ *     currency: 'XOF',
+ *     description: 'Order #1234',
+ *     success_url: 'https://app.example.com/pay/success',
+ *     cancel_url: 'https://app.example.com/pay/cancel',
+ *     ipn_url: 'https://app.example.com/api/ipn/paydunya',
+ *     client_reference: 'ORDER_1234_2025-08-13',
+ *   },
+ *   'prod',
+ * )
  *
- * // In your server route handler:
- * app.post('/create-paydunya-invoice', async (req, res) => {
- *   const payload: PaydunyaRequest = {
- *     invoice: {
- *       total_amount: 7500, // e.g., FCFA or CFA francs
- *       description: 'Order #A123',
- *     },
- *     store: {
- *       name: 'Mon E-Shop',
- *     },
- *     actions: {
- *       cancel_url: 'https://example.com/checkout/cancel',
- *       return_url: 'https://example.com/checkout/success',
- *       callback_url: 'https://api.example.com/paydunya/webhook',
- *     },
- *     custom_data: {
- *       userId: 'user_42',
- *       orderId: 'A123',
- *     },
- *   }
+ * // Redirect user to the hosted PayDunya checkout
+ * window.location.href = res.response_text
  *
- *   try {
- *     const response = await payWithPaydunya(payload, 'prod')
- *     // Redirect user to Paydunya’s hosted invoice page:
- *     // e.g., https://app.paydunya.com/invoice/{response.token}
- *     res.redirect(`https://app.paydunya.com/invoice/${response.token}`)
- *   } catch (err) {
- *     console.error('Paydunya error:', err)
- *     res.status(500).send('Unable to create Paydunya invoice.')
- *   }
- * })
+ * // Optionally store the token for later verification
+ * saveTransactionToken(res.token)
  * ```
  */
+
 export const payWithPaydunya = async (
   request: PaydunyaRequest,
   mode: 'test' | 'prod' = 'test',
 ): Promise<PaydunyaResponse> => {
   if (!process.env.PAYDUNYA_MASTER_KEY) {
-    throw new Error('PAYDUNYA_MASTER_KEY is not set')
+    throw new AfriError('missing_api_key', 'PAYDUNYA_MASTER_KEY is not set')
   }
 
   if (!process.env.PAYDUNYA_PRIVATE_KEY) {
-    throw new Error('PAYDUNYA_PRIVATE_KEY is not set')
+    throw new AfriError('missing_api_key', 'PAYDUNYA_PRIVATE_KEY is not set')
   }
 
   if (!process.env.PAYDUNYA_TOKEN) {
-    throw new Error('PAYDUNYA_TOKEN is not set')
+    throw new AfriError('missing_api_key', 'PAYDUNYA_TOKEN is not set')
   }
 
   const url = mode === 'test' ? PAYDUNYA_TEST_URL : PAYDUNYA_PROD_URL
@@ -118,7 +107,10 @@ export const payWithPaydunya = async (
   })
 
   if (!res.ok) {
-    throw new Error('Failed to create Paydunya payment request')
+    throw new AfriError(
+      'request_failed',
+      `Failed to create Paydunya payment request: ${res.statusText}`,
+    )
   }
 
   const data = (await res.json()) as PaydunyaResponse
