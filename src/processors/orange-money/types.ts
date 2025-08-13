@@ -30,7 +30,7 @@ export type OMResponse = {
   }
 }
 
-export type OMWebhookResponse = {
+export type OMWebhookResponse<T extends OMMetadata> = {
   amount: {
     unit: 'XOF'
     value: string
@@ -50,6 +50,6 @@ export type OMWebhookResponse = {
   paymentMethod: string
   detail: string | null
   createdAt: string
-  metadata?: OMMetadata
+  metadata?: T
   status: 'SUCCESS' | 'FAILED'
 }
