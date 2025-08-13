@@ -1,5 +1,16 @@
 # afripay
 
+## 0.2.0
+### Minor Changes
+
+- 76960fb: Added support for paydunya
+- 043eb8c: Added support for paytech
+
+### Patch Changes
+
+- 76960fb: OMWebhookResponse doc added
+- 9b49479: Updated the OMWebhookResponse to support Metadata generic type
+
 ## 0.1.0
 ### Minor Changes
 
