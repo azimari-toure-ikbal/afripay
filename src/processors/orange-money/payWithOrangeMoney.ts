@@ -44,6 +44,7 @@ export const VALIDITY_LIMIT = 86_400
  *     amount: { unit: 'XOF', value: 5000 },
  *     callbackCancelUrl: 'https://your.app/pay/cancel',
  *     callbackSuccessUrl: 'https://your.app/pay/success',
+ *     ipnUrl: 'https://your.app/webhooks/ipn',
  *     code: 221, // country code
  *     name: 'Order #1234',
  *     validity: 600, // seconds
