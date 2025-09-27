@@ -11,6 +11,7 @@ export type OMRequest = {
   metadata?: OMMetadata
   name: string
   validity: number
+  ipnUrl: string
 }
 
 export type OMResponse = {

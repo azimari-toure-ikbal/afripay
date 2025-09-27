@@ -138,7 +138,7 @@ export const payWithOrangeMoney = async (
       headers: {
         Authorization: `Bearer ${access_token}`,
         'Content-Type': 'application/json',
-        'X-Callback-Url': 'https://deco.minebar-sn.com/api/webhooks/om',
+        'X-Callback-Url': request.ipnUrl,
       },
       body: JSON.stringify(payload),
     },

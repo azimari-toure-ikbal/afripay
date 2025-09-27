@@ -40,7 +40,7 @@
   "scripts": {
     "lint": "eslint --cache .",
     "lint:fix": "bun run lint --fix",
-    "build": "tsdown ",
+    "build": "tsdown",
     "dev": "tsdown --watch",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
