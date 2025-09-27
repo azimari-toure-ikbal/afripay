@@ -1,5 +1,10 @@
 # afripay
 
+## 0.2.2
+### Patch Changes
+
+- 671a877: refined payWithOrangeMoney jsdoc
+
 ## 0.2.1
 ### Patch Changes
 
