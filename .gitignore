@@ -5,4 +5,7 @@ dist
 .DS_Store
 .eslintcache
 
-config.bat
+# environment variables
+.env
+.env.local
+.env.production
